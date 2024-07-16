@@ -4,7 +4,8 @@ function createTables() {
     xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     xhr.onreadystatechange = function () {
         if (xhr.readyState == 4 && xhr.status == 200) {
-            document.getElementById("message").innerHTML = xhr.responseText;
+            var response = xhr.responseText;
+            alert("Success!" + response);
             location.reload();
         }
     };

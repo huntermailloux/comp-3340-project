@@ -1,5 +1,5 @@
 <?php
-require 'ConnectionString.php';
+require 'connectionString.php';
 
 // Function to create tables
 function createTables($conn) {
@@ -86,8 +86,6 @@ function createTables($conn) {
 
 // Check if AJAX request is made
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['createTables'])) {
-    $conn = getConnection();
-
     if ($conn->connect_error) {
         echo "Connection failed: " . $conn->connect_error;
     } else {

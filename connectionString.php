@@ -1,9 +1,14 @@
 <?php
+require __DIR__ . '/vendor/autoload.php';
+
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv->load();
+
 session_start();
-$db_host = 'localhost'; 
-$db_username = 'maillo51_comp3340'; 
-$db_password = 'seha2024'; 
-$db_name = 'maillo51_comp3340'; 
+$db_host = $_ENV['DB_HOST']; 
+$db_username = $_ENV['DB_USERNAME']; 
+$db_password = $_ENV['DB_PASSWORD']; 
+$db_name = $_ENV['DB_NAME']; 
 
 
 $conn = new mysqli($db_host, $db_username, $db_password, $db_name);
