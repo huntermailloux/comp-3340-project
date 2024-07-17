@@ -22,6 +22,7 @@ function createTables($conn) {
         CREATE TABLE IF NOT EXISTS Posts (
             id INT PRIMARY KEY AUTO_INCREMENT,
             userId INT NOT NULL,
+            title TEXT NOT NULL,
             content TEXT NOT NULL,
             timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (userId) REFERENCES Users(id) ON DELETE CASCADE
