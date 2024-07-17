@@ -1,5 +1,5 @@
 <?php
-require 'connectionString.php';
+require 'phpScript/connectionString.php';
 
 // Function to create tables
 function createTables($conn) {
