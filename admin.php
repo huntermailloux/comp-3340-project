@@ -15,8 +15,5 @@
         echo '<p>' . htmlspecialchars($_GET['message']) . '</p>';
     }
     ?>
-    <!-- create tables and display records for Users, Posts, and Communications -->
-    <!-- allow admins to delete whatever they want. authenticate that the user is an admin -->
-    <!--  -->
 </body>
 </html>
