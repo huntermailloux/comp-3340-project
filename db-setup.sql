@@ -4,7 +4,7 @@ CREATE TABLE Users (
     username VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(100) NOT NULL,
     first_name VARCHAR(50) NOT NULL,
-    last_name VARCHAR(50) NOT NULL
+    last_name VARCHAR(50) NOT NULL,
     is_admin BOOLEAN DEFAULT FALSE
 );
 
@@ -12,8 +12,9 @@ CREATE TABLE Users (
 CREATE TABLE Posts (
     id INT PRIMARY KEY AUTO_INCREMENT,
     userId INT NOT NULL,
-    title TEXT NOT NULL
+    title TEXT NOT NULL,
     content TEXT NOT NULL,
+    likes INT NOT NULL DEFAULT 0,
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (userId) REFERENCES Users(id) ON DELETE CASCADE
 );
