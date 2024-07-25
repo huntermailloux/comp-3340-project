@@ -1,6 +1,6 @@
 function createTables() {
     var xhr = new XMLHttpRequest();
-    xhr.open("POST", "phpScripts/createTables.php", true);
+    xhr.open("POST", "createTables.php", true);
     xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     xhr.onreadystatechange = function () {
         if (xhr.readyState == 4 && xhr.status == 200) {
@@ -17,25 +17,19 @@ function createTables() {
 // ******************************************** //
 function createUser() {
     var xhr = new XMLHttpRequest();
-    xhr.open("POST", "phpScripts/createUser.php", true);
+    xhr.open("POST", "createUser.php", true);
     xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     xhr.onreadystatechange = function () {
         if (xhr.readyState == 4 && xhr.status == 200) {
             var response = xhr.responseText;
             alert("User created.");
             location.reload();
-        } else {
-
         }
     }
 
 }
 
 function updateUser() {}
-
-function pullUser() {
-
-}
 
 function deleteUser() {}
 
