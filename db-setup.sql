@@ -14,7 +14,6 @@ CREATE TABLE Posts (
     userId INT NOT NULL,
     title TEXT NOT NULL,
     content TEXT NOT NULL,
-    likes INT NOT NULL DEFAULT 0,
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (userId) REFERENCES Users(id) ON DELETE CASCADE
 );
@@ -37,4 +36,14 @@ CREATE TABLE UserCommunications (
     email VARCHAR(100) NOT NULL,
     message TEXT NOT NULL,
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create Likes table
+CREATE TABLE Likes (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    postId INT NOT NULL,
+    userId INT NOT NULL,
+    FOREIGN KEY (postId) REFERENCES Posts(id) ON DELETE CASCADE,
+    FOREIGN KEY (userId) REFERENCES Users(id) ON DELETE CASCADE,
+    UNIQUE KEY (postId, userId) 
 );

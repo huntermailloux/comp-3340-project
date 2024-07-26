@@ -166,6 +166,42 @@ main {
     margin: 10px 0;
 }
 
+/* Like Button Styling */
+.likes {
+    margin: 10px 0;
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+}
+
+.like-btn {
+    background-color: #1e3c72; /* Primary color for like button */
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.like-btn:hover {
+    background-color: #163354; /* Darker shade on hover */
+}
+
+.like-btn.liked {
+    background-color: #888; /* Different color for unlike state */
+}
+
+.like-btn.liked:hover {
+    background-color: #555; /* Darker shade on hover for unlike state */
+}
+
+.like-btn:disabled {
+    background-color: #aaa;
+    cursor: not-allowed;
+}
+
 /* Comment Form Styling */
 .comment-form {
     display: flex;
