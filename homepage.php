@@ -1,3 +1,18 @@
+<?php
+session_start();
+require 'connectionString.php';
+
+// Fetch the most recent posts along with the number of comments for each post
+$query = "
+    SELECT p.id AS post_id, p.title, p.content, u.username, p.timestamp,
+           (SELECT COUNT(*) FROM Comments c WHERE c.postId = p.id) AS comment_count
+    FROM Posts p
+    JOIN Users u ON p.userId = u.id
+    ORDER BY p.timestamp DESC
+    LIMIT 10";
+$result = $conn->query($query);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,8 +37,11 @@
                 <div class="profile">
                     <img src="profile-icon.png" alt="Profile" class="profile-img">
                     <div class="profile-dropdown">
-                        <a href="#">Login</a>
-                        <a href="#">Logout</a>
+                        <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin']): ?>
+                            <a href="logout.php">Logout</a>
+                        <?php else: ?>
+                            <a href="login.php">Login</a>
+                        <?php endif; ?>
                     </div>
                 </div>
             </nav>
@@ -34,27 +52,14 @@
         <div class="container">
             <div class="main-content">
                 <section class="posts">
-                    <article class="post">
-                        <h2>Post Title 1</h2>
-                        <p class="author">Posted by User1</p>
-                        <p class="content">This is the content of the first post. It contains interesting information about a topic.</p>
-                    </article>
-                    <article class="post">
-                        <h2>Post Title 2</h2>
-                        <p class="author">Posted by User2</p>
-                        <p class="content">This is the content of the second post. It contains details about another interesting topic.</p>
-                    </article>
-                    <article class="post">
-                        <h2>Post Title 3</h2>
-                        <p class="author">Posted by User3</p>
-                        <p class="content">This is the content of the third post. It offers insights on a different subject matter.</p>
-                    </article>
-                    <article class="post">
-                        <h2>Post Title 4</h2>
-                        <p class="author">Posted by User4</p>
-                        <p class="content">This is the content of the fourth post. Here we discuss another fascinating topic.</p>
-                    </article>
-                    <!-- More posts can be added here -->
+                    <?php while ($row = $result->fetch_assoc()): ?>
+                        <article class="post">
+                            <h2><a href="post-info.php?post_id=<?php echo $row['post_id']; ?>"><?php echo htmlspecialchars($row['title']); ?></a></h2>
+                            <p class="author">Posted by <?php echo htmlspecialchars($row['username']); ?> on <?php echo htmlspecialchars($row['timestamp']); ?></p>
+                            <p class="content"><?php echo htmlspecialchars($row['content']); ?></p>
+                            <p class="comments"><?php echo $row['comment_count']; ?> comments</p>
+                        </article>
+                    <?php endwhile; ?>
                 </section>
                 
                 <aside class="sidebar">
