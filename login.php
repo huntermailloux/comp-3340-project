@@ -1,19 +1,25 @@
 <?php
-session_start();
-include 'connectionString.php';
+
+// Include the database connection file
+include 'ConnectionString.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = $_POST['username'];
     $password = $_POST['password'];
 
-    $conn = new mysqli($servername, $dbUsername, $dbPassword, $dbname);
-
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
+   // Check if $conn is properly included
+    if (!isset($conn)) {
+        die("Database connection failed.");
     }
 
+    // Prepare the SQL statement
     $sql = "SELECT * FROM users WHERE username = ?";
     $stmt = $conn->prepare($sql);
+
+    if (!$stmt) {
+        die("Prepare failed: " . $conn->error);
+    }
+    
     $stmt->bind_param("s", $username);
     $stmt->execute();
     $result = $stmt->get_result();
