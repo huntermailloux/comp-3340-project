@@ -2,13 +2,13 @@
 session_start();
 require 'connectionString.php';
 
-$userId = $_SESSION['userId'] ?? 0; // Default to 0 if userId is not set
-$isAdmin = $_SESSION['isAdmin'] ?? 0;
-
-// Debugging line to check user ID
-if ($userId == 0) {
-    echo "Warning: User not logged in or session not initialized.";
+// Check if the user is logged in
+if (!isset($_SESSION['loggedin']) || !$_SESSION['loggedin']) {
+    echo "<p>Please <a href='login.php'>login</a> to see your posts.</p>";
+    exit;
 }
+
+$userId = $_SESSION['userId'] ?? 0; // Get the logged-in user's ID
 
 $query = "
     SELECT p.id AS post_id, p.title, p.content, u.username, p.timestamp,
@@ -17,10 +17,11 @@ $query = "
            (SELECT COUNT(*) FROM Comments c WHERE c.postId = p.id) AS comment_count
     FROM Posts p
     JOIN Users u ON p.userId = u.id
+    WHERE p.userId = ?
     ORDER BY p.timestamp DESC";
 
 if ($stmt = $conn->prepare($query)) {
-    $stmt->bind_param("i", $userId);
+    $stmt->bind_param("ii", $userId, $userId);
     $stmt->execute();
     $result = $stmt->get_result();
 } else {
@@ -33,7 +34,7 @@ if ($stmt = $conn->prepare($query)) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>COMP3340 Project</title>
+    <title>My Posts - COMP3340 Project</title>
     <link rel="stylesheet" href="style_homepage.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
@@ -58,6 +59,19 @@ if ($stmt = $conn->prepare($query)) {
                     }
                 }, 'json');
             });
+
+            $('.delete-btn').click(function() {
+                var postId = $(this).data('post-id');
+                if (confirm('Are you sure you want to delete this post?')) {
+                    $.post('delete_post.php', { post_id: postId }, function(response) {
+                        if (response.success) {
+                            $('#post-' + postId).remove();
+                        } else {
+                            alert(response.message);
+                        }
+                    }, 'json');
+                }
+            });
         });
     </script>
 </head>
@@ -79,8 +93,8 @@ if ($stmt = $conn->prepare($query)) {
                     <div class="profile-dropdown">
                         <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin']): ?>
                             <a href="logout.php">Logout</a>
-                            <?php if ($isAdmin == 1): ?>
-                                <a href="admin.php">Admin</a>
+                            <?php if ($_SESSION['isAdmin']): ?>
+                                <a href="admin.php">Admin Panel</a>
                             <?php endif; ?>
                         <?php else: ?>
                             <a href="login.php">Login</a>
@@ -95,39 +109,23 @@ if ($stmt = $conn->prepare($query)) {
         <div class="container">
             <div class="main-content">
                 <section class="posts">
+                    <h2>My Posts</h2>
                     <?php while ($row = $result->fetch_assoc()): ?>
-                        <article class="post">
+                        <article class="post" id="post-<?php echo $row['post_id']; ?>">
                             <h2><a href="post-info.php?post_id=<?php echo $row['post_id']; ?>"><?php echo htmlspecialchars($row['title']); ?></a></h2>
                             <p class="author">Posted by <?php echo htmlspecialchars($row['username']); ?> on <?php echo htmlspecialchars($row['timestamp']); ?></p>
                             <p class="content"><?php echo nl2br(htmlspecialchars($row['content'])); ?></p>
                             <p class="comments">Comments: <?php echo $row['comment_count']; ?></p>
-                            <p class="likes">Likes:&nbsp; <span id="like-count-<?php echo $row['post_id']; ?>"><?php echo $row['like_count']; ?></span></p>
+                            <p class="likes">Likes: <span id="like-count-<?php echo $row['post_id']; ?>"><?php echo $row['like_count']; ?></span></p>
                             <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin']): ?>
                                 <button id="like-btn-<?php echo $row['post_id']; ?>" class="like-btn <?php echo ($row['user_liked'] > 0) ? 'liked' : ''; ?>" data-post-id="<?php echo $row['post_id']; ?>">
                                     <?php echo ($row['user_liked'] > 0) ? 'Unlike' : 'Like'; ?>
                                 </button>
+                                <button class="delete-btn" data-post-id="<?php echo $row['post_id']; ?>">Delete</button>
                             <?php endif; ?>
                         </article>
                     <?php endwhile; ?>
                 </section>
-                
-                <aside class="sidebar">
-                    <section class="sidebar-item">
-                        <h3>Rising Posts</h3>
-                        <ul>
-                            <li><a href="#">Post Title 5</a></li>
-                            <li><a href="#">Post Title 6</a></li>
-                            <li><a href="#">Post Title 7</a></li>
-                            <li><a href="#">Post Title 8</a></li>
-                            <!-- More rising posts can be added here -->
-                        </ul>
-                    </section>
-                    <section class="sidebar-item">
-                        <a href="createPost.php">
-                            <button class="create-button">Create Post</button>
-                        </a>
-                    </section>
-                </aside>
             </div>
         </div>
     </main>
@@ -139,20 +137,20 @@ if ($stmt = $conn->prepare($query)) {
     </footer>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {
-        const profileImg = document.querySelector('.profile-img');
-        const profileDropdown = document.querySelector('.profile-dropdown');
+            const profileImg = document.querySelector('.profile-img');
+            const profileDropdown = document.querySelector('.profile-dropdown');
 
-        profileImg.addEventListener('click', () => {
-            profileDropdown.style.display = profileDropdown.style.display === 'none' || profileDropdown.style.display === '' ? 'block' : 'none';
-        });
+            profileImg.addEventListener('click', () => {
+                profileDropdown.style.display = profileDropdown.style.display === 'none' || profileDropdown.style.display === '' ? 'block' : 'none';
+            });
 
-        // Close the dropdown if the user clicks outside of it
-        document.addEventListener('click', (event) => {
-            if (!profileImg.contains(event.target) && !profileDropdown.contains(event.target)) {
-                profileDropdown.style.display = 'none';
-            }
+            // Close the dropdown if the user clicks outside of it
+            document.addEventListener('click', (event) => {
+                if (!profileImg.contains(event.target) && !profileDropdown.contains(event.target)) {
+                    profileDropdown.style.display = 'none';
+                }
+            });
         });
-    });
     </script>
 </body>
 </html>

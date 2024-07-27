@@ -2,7 +2,9 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 // Connect to database
-require 'ConnectionString.php'; 
+require 'connectionString.php'; 
+
+$isAdmin = $_SESSION['isAdmin'] ?? 0;
 
 // SQL query to get posts with the number of likes from most likes to least likes
 $query = "
@@ -45,8 +47,14 @@ if ($result === FALSE) {
                 <div class="profile">
                     <img src="profile-icon.png" alt="Profile" class="profile-img">
                     <div class="profile-dropdown">
-                        <a href="login.html">Login</a>
-                        <a href="logout.php">Logout</a>
+                        <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin']): ?>
+                            <a href="logout.php">Logout</a>
+                            <?php if ($isAdmin == 1): ?>
+                                <a href="admin.php">Admin</a>
+                            <?php endif; ?>
+                        <?php else: ?>
+                            <a href="login.php">Login</a>
+                        <?php endif; ?>
                     </div>
                 </div>
             </nav>

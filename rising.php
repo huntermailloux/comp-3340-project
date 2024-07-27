@@ -1,6 +1,7 @@
 <?php
-require 'ConnectionString.php';
+require 'connectionString.php';
 
+$isAdmin = $_SESSION['isAdmin'] ?? 0;
 // Fetch posts from the last 24 hours sorted by most likes to least likes
 $sql = "SELECT Posts.id, Posts.title, Posts.content, Users.username, COUNT(Likes.id) as like_count
         FROM Posts
@@ -44,8 +45,14 @@ if ($result->num_rows > 0) {
                 <div class="profile">
                     <img src="profile-icon.png" alt="Profile" class="profile-img">
                     <div class="profile-dropdown">
-                        <a href="login.html">Login</a>
-                        <a href="logout.php">Logout</a>
+                        <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin']): ?>
+                            <a href="logout.php">Logout</a>
+                            <?php if ($isAdmin == 1): ?>
+                                <a href="admin.php">Admin</a>
+                            <?php endif; ?>
+                        <?php else: ?>
+                            <a href="login.php">Login</a>
+                        <?php endif; ?>
                     </div>
                 </div>
             </nav>

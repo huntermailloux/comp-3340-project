@@ -1,7 +1,7 @@
 <?php
 
 // Include database connection file
-require 'ConnectionString.php';
+require 'connectionString.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Sanitize input

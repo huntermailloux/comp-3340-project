@@ -20,7 +20,7 @@ if ($result->num_rows > 0) {
     $_SESSION['userId'] = $row['id'];
     $_SESSION['isAdmin'] = $row['is_admin'];
     $username = $_SESSION['username'];
-    header("Location: admin.php");
+    header("Location: homepage.php");
     exit;
     
 } else {
