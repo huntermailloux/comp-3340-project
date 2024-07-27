@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us</title>
+    <link rel="stylesheet" href="style_contact.css">
+    <script src="https://cdn.tiny.cloud/1/vlbp5y98r4glkmz5g93tqr39udxicucsm6dwkslbz9a3mvfu/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+    <script>
+      tinymce.init({
+        selector: '#message'
+      });
+    </script>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="navbar">
+            <div class="logo">
+                <img src="logo.png" alt="Logo">
+                <span>COMP3340 Project</span>
+            </div>
+            <div class="navbar-links">
+                <a href="homepage.php">Home</a>
+                <a href="popular.php">Popular</a>
+                <a href="rising.php">Rising</a>
+                <a href="my_posts.php">My Posts</a>
+                <a href="contact.html">Contact</a>
+            </div>
+            <div class="profile">
+                <img src="profile-icon.png" alt="Profile" class="profile-icon">
+                <div class="profile-dropdown">
+                    <a href="#">Login</a>
+                    <a href="#">Logout</a>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- End of Header -->
+    <div class="container">
+        <h2>Contact Us</h2>
+        <form action="submit_contact.php" method="post">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
+            
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+            
+            <label for="message">Message:</label>
+            <textarea id="message" name="message"></textarea>
+            
+            <button type="submit">Submit</button>
+            <input type="reset" value="Reset">
+        </form>
+    </div>
+
+    <footer>
+        <div class="footer-container">
+            <p>&copy; 2024 COMP3340 Project. All rights reserved.</p>
+        </div>
+    </footer>
+    <!-- End of Footer -->
+
+    <script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+        const profileImg = document.querySelector('.profile-icon');
+        const profileDropdown = document.querySelector('.profile-dropdown');
+
+        profileImg.addEventListener('click', () => {
+            profileDropdown.style.display = profileDropdown.style.display === 'none' || profileDropdown.style.display === '' ? 'block' : 'none';
+        });
+
+        // Close the dropdown if the user clicks outside of it
+        document.addEventListener('click', (event) => {
+            if (!profileImg.contains(event.target) && !profileDropdown.contains(event.target)) {
+                profileDropdown.style.display = 'none';
+            }
+        });
+    });
+    </script>
+</body>
+</html>
