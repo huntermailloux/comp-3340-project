@@ -13,6 +13,30 @@
     </script>
 </head>
 <body>
+    <!-- Header -->
+    <header>
+        <div class="navbar">
+            <div class="logo">
+                <img src="logo.png" alt="Logo">
+                <span>COMP3340 Project</span>
+            </div>
+            <div class="navbar-links">
+                <a href="homepage.php">Home</a>
+                <a href="popular.php">Popular</a>
+                <a href="rising.php">Rising</a>
+                <a href="my_posts.php">My Posts</a>
+                <a href="contact.html">Contact</a>
+            </div>
+            <div class="profile">
+                <img src="profile-icon.png" alt="Profile" class="profile-icon">
+                <div class="profile-dropdown">
+                    <a href="#">Login</a>
+                    <a href="#">Logout</a>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- End of Header -->
     <div class="container">
         <h2>Contact Us</h2>
         <form action="submit_contact.php" method="post">
@@ -27,8 +51,32 @@
             
             <button type="submit">Submit</button>
             <input type="reset" value="Reset">
-
         </form>
     </div>
+
+    <footer>
+        <div class="footer-container">
+            <p>&copy; 2024 COMP3340 Project. All rights reserved.</p>
+        </div>
+    </footer>
+    <!-- End of Footer -->
+
+    <script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+        const profileImg = document.querySelector('.profile-icon');
+        const profileDropdown = document.querySelector('.profile-dropdown');
+
+        profileImg.addEventListener('click', () => {
+            profileDropdown.style.display = profileDropdown.style.display === 'none' || profileDropdown.style.display === '' ? 'block' : 'none';
+        });
+
+        // Close the dropdown if the user clicks outside of it
+        document.addEventListener('click', (event) => {
+            if (!profileImg.contains(event.target) && !profileDropdown.contains(event.target)) {
+                profileDropdown.style.display = 'none';
+            }
+        });
+    });
+    </script>
 </body>
 </html>
