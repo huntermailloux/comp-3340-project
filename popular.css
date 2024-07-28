@@ -1,0 +1,31 @@
+/* Import base styles */
+@import url('style_homepage.css');
+
+main {
+    padding-top: 20px; 
+}
+
+/* Specific styles for Popular page content */
+h1.popular-title {
+    font-size: 25px; /* Larger font size for Popular Posts title */
+    text-decoration: underline; /* Underline the Popular Posts title */
+    margin: 20px 0;
+    color: #333; 
+}
+
+h2 {
+    margin: 15px 0;
+    font-size: 1.25em;
+    color: #333;
+}
+
+.posts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+/* Adjusts width of the posts for better layout */
+.post {
+    width: calc(50% - 20px); /* Adjusts width for two-column layout */
+}

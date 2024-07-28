@@ -115,13 +115,9 @@ nav a:hover::after {
     background: #f0f4f8;
 }
 
-.profile:hover .profile-dropdown {
-    display: block;
-}
-
 /* Main Content Styling */
 main {
-    margin-top: 90px; /* Adjust for header */
+    margin-top: 100px; /* Adjust for header */
     padding-bottom: 60px; /* Space for footer */
 }
 
@@ -324,4 +320,128 @@ footer {
 
 h2 a {
     color: black;
+}
+
+/* General styling for the delete button */
+.delete-btn {
+    background-color: #e74c3c; /* Red background color to indicate caution */
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-left: 10px; /* Space between like and delete buttons */
+    transition: background-color 0.3s;
+}
+
+.delete-btn:hover {
+    background-color: #c0392b; /* Darker red for hover effect */
+}
+
+.delete-btn:focus {
+    outline: none; /* Remove the default outline on focus */
+    box-shadow: 0 0 3px #c0392b; /* Add a subtle box shadow on focus */
+}
+
+.create-button {
+    width: 100%;
+    background-color: rgb(29, 207, 29);
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+    cursor: pointer;
+}
+
+.create-button:hover {
+    background-color: green;
+}
+
+.delete-comment-btn {
+    background-color: #e74c3c; /* Red color for delete action */
+    color: white;
+    border: none;
+    padding: 3px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+}
+
+.delete-comment-btn:hover {
+    background-color: #c0392b; /* Darker red on hover */
+}
+
+.delete-comment-btn:focus {
+    outline: none;
+    box-shadow: 0 0 3px #c0392b;
+}
+
+/* Edit button styling */
+.edit-btn {
+    background-color: #3498db; /* Blue color for edit action */
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-left: 10px; /* Space between other buttons */
+    transition: background-color 0.3s;
+}
+
+.edit-btn:hover {
+    background-color: #2980b9; /* Darker blue on hover */
+}
+
+.edit-btn:focus {
+    outline: none;
+    box-shadow: 0 0 3px #2980b9; /* Focus indication */
+}
+
+/* Edit form styling */
+.edit-form {
+    display: none; /* Initially hidden */
+    margin-top: 10px; /* Space above the form */
+}
+
+.edit-form input[type="text"],
+.edit-form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.edit-form textarea {
+    resize: vertical; /* Allow vertical resizing */
+}
+
+/* Save button styling */
+.save-edit-btn {
+    background-color: #2ecc71; /* Green color for save action */
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.save-edit-btn:hover {
+    background-color: #27ae60; /* Darker green on hover */
+}
+
+.save-edit-btn:focus {
+    outline: none;
+    box-shadow: 0 0 3px #27ae60; /* Focus indication */
 }
