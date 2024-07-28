@@ -24,7 +24,7 @@ if ($result->num_rows > 0) {
     exit;
     
 } else {
-    header('Location: /project/public_html/login.php?error=1');
+    header('Location: /project/public_html/login.php?error=invalid');
     exit;
 }
 ?>

@@ -12,7 +12,7 @@ let commsCurrentPage = 1;
 // ====================================== //
 
 function pullUserData() {
-    fetch('fetch_users.php', {
+    fetch('../private/fetch_users.php', {
         method: 'POST',
         headers: {
             'Content-Type' : 'application/x-www-form-urlencoded'
@@ -85,7 +85,7 @@ function displayUserPagination() {
 // ====================================== //
 
 function pullPostsData() {
-    fetch('fetch_posts.php', {
+    fetch('../private/fetch_posts.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
@@ -154,7 +154,7 @@ function displayPostsPagination() {
 }
 
 function fetchResults(query) {
-    fetch(`search.php?query=${encodeURIComponent(query)}`)
+    fetch(`../private/search.php?query=${encodeURIComponent(query)}`)
         .then(response => {
             if (!response.ok) {
                 throw new Error(`Network response was not ok: ${response.statusText}`);
@@ -200,9 +200,9 @@ function handleDelete(event) {
     let url = '';
 
     if (type === 'user') {
-        url = `admin_delete_user.php?id=${id}`;
+        url = `../private/admin_delete_user.php?id=${id}`;
     } else if (type === 'post') {
-        url = `admin_delete_post.php?id=${id}`;
+        url = `../private/admin_delete_post.php?id=${id}`;
     }
 
     if (confirm('Are you sure you want to delete this record?')) {
@@ -234,7 +234,7 @@ function handleDelete(event) {
 // ====================================== //
 
 function pullCommsData() {
-    fetch('fetch_comms.php', {
+    fetch('../private/fetch_comms.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded'

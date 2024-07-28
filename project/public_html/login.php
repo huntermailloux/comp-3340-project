@@ -43,7 +43,10 @@
         <div class="login-container">
             <form class="login-form" action="../private/login_process.php" method="post">
                 <h2>Login</h2>
-                <?php if (isset($_GET['error'])): ?>
+                <?php if ($_GET['error'] == 'unauthenticated'): ?>
+                    <div class="error">Unauthenticated.</div>
+                <?php endif; ?>
+                <?php if ($_GET['error'] == 'invalid'): ?>
                     <div class="error">Invalid username or password.</div>
                 <?php endif; ?>
                 <?php if (isset($_GET['success']) && $_GET['success'] == 'account_created'): ?>

@@ -1,10 +1,10 @@
 <?php
-    require 'connectionString.php';
+    require '../private/connectionString.php';
     $userId = $_SESSION['userId'];
     $isAdmin = $_SESSION['isAdmin'];
 
     if ($isAdmin == false) {
-        header("Location: login.php?=error=unauthenticated");
+        header("Location: login.php?error=unauthenticated");
         exit;
     }
 ?>
@@ -19,10 +19,10 @@
         document.write("<link rel='stylesheet' href='tables.css?v=" + Date.now() + "'><\/link>");
     </script>
     <script>
-        document.write("<script type='text/javascript' src='tables.js?v=" + Date.now() + "'><\/script>");
+        document.write("<script type='text/javascript' src='../private/tables.js?v=" + Date.now() + "'><\/script>");
     </script>
     <script>
-        document.write("<script type='text/javascript' src='search.js?v=" + Date.now() + "'><\/script>");
+        document.write("<script type='text/javascript' src='../private/search.js?v=" + Date.now() + "'><\/script>");
     </script>
     <script>
         document.write("<link rel='stylesheet' href='postsTable.css?v=" + Date.now() + "'><\/link>");
@@ -51,7 +51,7 @@
     <div class="table-container">
         <h1>Table of All Posts</h1>
         <div class="search-container">
-            <form action="search.php" id="searchForm" method="GET">
+            <form action="../private/search.php" id="searchForm" method="GET">
                 <input type="text" id="searchQuery" name="query" placeholder="Search posts...">
                 <button type="submit">Search</button>
             </form>   
