@@ -29,6 +29,34 @@
     </script>
 </head>
 <body>
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <img src="logo.png" alt="Logo" class="logo-img">
+                <h1>COMP3340 Project</h1>
+            </div>
+            <nav>
+                <a href="homepage.php">Home</a>
+                <a href="popular.php">Popular</a>
+                <a href="rising.php">Rising</a>
+                <a href="my-posts.php">My Posts</a>
+                <a href="contact.html">Contact</a>
+                <div class="profile">
+                    <img src="profile-icon.png" alt="Profile" class="profile-img">
+                    <div class="profile-dropdown">
+                        <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin']): ?>
+                            <a href="../private/logout.php">Logout</a>
+                            <?php if ($isAdmin == 1): ?>
+                                <a href="admin.php">Admin</a>
+                            <?php endif; ?>
+                        <?php else: ?>
+                            <a href="login.php">Login</a>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
     <div class="table-container">
         <h1>Table of All Users</h1>
         <table id="classTable">
@@ -90,5 +118,27 @@
         </table>
         <div class="pagination" id="commsPagination"></div>
     </div>
+    <footer>
+        <div class="header-container">
+            <p>&copy; 2024 COMP3340 Project. All rights reserved.</p>
+        </div>
+    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+        const profileImg = document.querySelector('.profile-img');
+        const profileDropdown = document.querySelector('.profile-dropdown');
+
+        profileImg.addEventListener('click', () => {
+            profileDropdown.style.display = profileDropdown.style.display === 'none' || profileDropdown.style.display === '' ? 'block' : 'none';
+        });
+
+        // Close the dropdown if the user clicks outside of it
+        document.addEventListener('click', (event) => {
+            if (!profileImg.contains(event.target) && !profileDropdown.contains(event.target)) {
+                profileDropdown.style.display = 'none';
+            }
+        });
+    });
+    </script>
 </body>
 </html>
