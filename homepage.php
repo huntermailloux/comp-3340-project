@@ -10,6 +10,7 @@ if ($userId == 0) {
     echo "Warning: User not logged in or session not initialized.";
 }
 
+// Fetch recent posts
 $query = "
     SELECT p.id AS post_id, p.title, p.content, u.username, p.timestamp,
            (SELECT COUNT(*) FROM Likes l WHERE l.postId = p.id) AS like_count,
@@ -26,6 +27,17 @@ if ($stmt = $conn->prepare($query)) {
 } else {
     echo "Prepare failed: (" . $conn->errno . ") " . $conn->error;
 }
+
+// Fetch top 5 most liked posts
+$popularQuery = "
+    SELECT p.id AS post_id, p.title, p.content, u.username, p.timestamp,
+           (SELECT COUNT(*) FROM Likes l WHERE l.postId = p.id) AS like_count
+    FROM Posts p
+    JOIN Users u ON p.userId = u.id
+    ORDER BY like_count DESC
+    LIMIT 5";
+
+$popularPosts = $conn->query($popularQuery);
 ?>
 
 <!DOCTYPE html>
@@ -113,13 +125,14 @@ if ($stmt = $conn->prepare($query)) {
                 
                 <aside class="sidebar">
                     <section class="sidebar-item">
-                        <h3>Rising Posts</h3>
+                        <h3>Popular Posts</h3>
                         <ul>
-                            <li><a href="#">Post Title 5</a></li>
-                            <li><a href="#">Post Title 6</a></li>
-                            <li><a href="#">Post Title 7</a></li>
-                            <li><a href="#">Post Title 8</a></li>
-                            <!-- More rising posts can be added here -->
+                            <?php
+                            $rank = 1;
+                            while ($popular = $popularPosts->fetch_assoc()): ?>
+                                <li><a href="post-info.php?post_id=<?php echo $popular['post_id']; ?>"><?php echo "#" . $rank . ": " . htmlspecialchars($popular['title']); ?></a></li>
+                                <?php $rank++; ?>
+                            <?php endwhile; ?>
                         </ul>
                     </section>
                     <section class="sidebar-item">
