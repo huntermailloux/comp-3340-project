@@ -4,7 +4,8 @@ require 'ConnectionString.php';
 
 // Fetch posts from the database
 $sql = "SELECT Posts.*, Users.username, 
-        (SELECT COUNT(*) FROM Likes WHERE Likes.postId = Posts.id) AS like_count 
+        (SELECT COUNT(*) FROM Likes WHERE Likes.postId = Posts.id) AS like_count, 
+        (SELECT COUNT(*) FROM Comments WHERE Comments.postId = Posts.id) AS comment_count 
         FROM Posts 
         JOIN Users ON Posts.userId = Users.id 
         ORDER BY Posts.timestamp DESC";
@@ -12,6 +13,20 @@ $result = $conn->query($sql);
 
 // Error handling for SQL query
 if (!$result) {
+    die('Query failed: ' . $conn->error);
+}
+
+// Fetch rising posts from the database
+$rising_sql = "SELECT Posts.*, Users.username, 
+              (SELECT COUNT(*) FROM Likes WHERE Likes.postId = Posts.id) AS like_count 
+              FROM Posts 
+              JOIN Users ON Posts.userId = Users.id 
+              ORDER BY like_count DESC, Posts.timestamp DESC 
+              LIMIT 5";
+$rising_result = $conn->query($rising_sql);
+
+// Error handling for SQL query
+if (!$rising_result) {
     die('Query failed: ' . $conn->error);
 }
 ?>
@@ -23,7 +38,14 @@ if (!$result) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>COMP3340 Project</title>
     <link rel="stylesheet" href="style_homepage.css">
-    
+    <style>
+        .post-content {
+            display: none;
+        }
+        .post-content.visible {
+            display: block;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -53,42 +75,28 @@ if (!$result) {
         <div class="container">
             <div class="main-content">
                 <section class="posts">
-                    <article class="post">
-                        <h2>Post Title 1</h2>
-                        <p class="author">Posted by User1</p>
-                        <p class="content">This is the content of the first post. It contains interesting information about a topic.</p>
-                    </article>
-                    <article class="post">
-                        <h2>Post Title 2</h2>
-                        <p class="author">Posted by User2</p>
-                        <p class="content">This is the content of the second post. It contains details about another interesting topic.</p>
-                    </article>
-                    <article class="post">
-                        <h2>Post Title 3</h2>
-                        <p class="author">Posted by User3</p>
-                        <p class="content">This is the content of the third post. It offers insights on a different subject matter.</p>
-                    </article>
-                    <article class="post">
-                        <h2>Post Title 4</h2>
-                        <p class="author">Posted by User4</p>
-                        <p class="content">This is the content of the fourth post. Here we discuss another fascinating topic.</p>
-                    </article>
-                    <!-- More posts can be added here -->
+                    <?php while ($row = $result->fetch_assoc()): ?>
+                        <article class="post">
+                            <h2 onclick="togglePostContent(<?php echo $row['id']; ?>)"><?php echo htmlspecialchars($row['title']); ?></h2>
+                            <p class="author">Posted by <?php echo htmlspecialchars($row['username']); ?> on <?php echo htmlspecialchars($row['timestamp']); ?></p>
+                            <div id="post-content-<?php echo $row['id']; ?>" class="post-content">
+                                <p class="content"><?php echo nl2br(htmlspecialchars($row['content'])); ?></p>
+                                <p class="likes">Likes: <?php echo htmlspecialchars($row['like_count']); ?></p>
+                                <p class="comments">Comments: <?php echo htmlspecialchars($row['comment_count']); ?></p>
+                            </div>
+                        </article>
+                    <?php endwhile; ?>
                 </section>
                 
                 <aside class="sidebar">
                     <section class="sidebar-item">
-                        <h3>Activity</h3>
-                        <p>Latest activities and updates from the community.</p>
-                    </section>
-                    <section class="sidebar-item">
                         <h3>Rising Posts</h3>
                         <ul>
-                            <li><a href="rising.php">Post Title 5</a></li>
-                            <li><a href="rising.php">Post Title 6</a></li>
-                            <li><a href="rising.php">Post Title 7</a></li>
-                            <li><a href="rising.php">Post Title 8</a></li>
-                            <!-- More rising posts can be added here -->
+                            <?php while ($rising_row = $rising_result->fetch_assoc()): ?>
+                                <li>
+                                    <a href="#" onclick="togglePostContent(<?php echo $rising_row['id']; ?>)"><?php echo htmlspecialchars($rising_row['title']); ?></a>
+                                </li>
+                            <?php endwhile; ?>
                         </ul>
                     </section>
                 </aside>
@@ -103,6 +111,13 @@ if (!$result) {
     </footer>
 
     <script>
+    function togglePostContent(postId) {
+        var postContent = document.getElementById('post-content-' + postId);
+        if (postContent) {
+            postContent.classList.toggle('visible');
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', (event) => {
         const profileImg = document.querySelector('.profile-img');
         const profileDropdown = document.querySelector('.profile-dropdown');
