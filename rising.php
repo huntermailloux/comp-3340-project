@@ -40,7 +40,7 @@ if ($result->num_rows > 0) {
                 <a href="homepage.php">Home</a>
                 <a href="popular.php">Popular</a>
                 <a href="rising.php">Rising</a>
-                <a href="my_posts.php">My Posts</a>
+                <a href="my-posts.php">My Posts</a>
                 <a href="contact.html">Contact</a>
                 <div class="profile">
                     <img src="profile-icon.png" alt="Profile" class="profile-img">

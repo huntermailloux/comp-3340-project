@@ -72,6 +72,27 @@ if ($stmt = $conn->prepare($query)) {
                     }, 'json');
                 }
             });
+
+            $('.edit-btn').click(function() {
+                var postId = $(this).data('post-id');
+                $('#edit-form-' + postId).toggle(); // Toggle visibility of the edit form
+            });
+
+            $('.save-edit-btn').click(function() {
+                var postId = $(this).data('post-id');
+                var title = $('#edit-title-' + postId).val();
+                var content = $('#edit-content-' + postId).val();
+
+                $.post('edit_post.php', { post_id: postId, title: title, content: content }, function(response) {
+                    if (response.success) {
+                        $('#post-title-' + postId).text(title); // Update the title in the DOM
+                        $('#post-content-' + postId).text(content); // Update the content in the DOM
+                        $('#edit-form-' + postId).hide(); // Hide the edit form after saving
+                    } else {
+                        alert(response.message);
+                    }
+                }, 'json');
+            });
         });
     </script>
 </head>
@@ -114,7 +135,7 @@ if ($stmt = $conn->prepare($query)) {
                         <article class="post" id="post-<?php echo $row['post_id']; ?>">
                             <h2><a href="post-info.php?post_id=<?php echo $row['post_id']; ?>"><?php echo htmlspecialchars($row['title']); ?></a></h2>
                             <p class="author">Posted by <?php echo htmlspecialchars($row['username']); ?> on <?php echo htmlspecialchars($row['timestamp']); ?></p>
-                            <p class="content"><?php echo nl2br(htmlspecialchars($row['content'])); ?></p>
+                            <p class="content" id="post-content-<?php echo $row['post_id']; ?>"><?php echo nl2br(htmlspecialchars($row['content'])); ?></p>
                             <p class="comments">Comments: <?php echo $row['comment_count']; ?></p>
                             <p class="likes">Likes: <span id="like-count-<?php echo $row['post_id']; ?>"><?php echo $row['like_count']; ?></span></p>
                             <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin']): ?>
@@ -122,6 +143,12 @@ if ($stmt = $conn->prepare($query)) {
                                     <?php echo ($row['user_liked'] > 0) ? 'Unlike' : 'Like'; ?>
                                 </button>
                                 <button class="delete-btn" data-post-id="<?php echo $row['post_id']; ?>">Delete</button>
+                                <button class="edit-btn" data-post-id="<?php echo $row['post_id']; ?>">Edit</button>
+                                <div class="edit-form" id="edit-form-<?php echo $row['post_id']; ?>" style="display: none;">
+                                    <input type="text" id="edit-title-<?php echo $row['post_id']; ?>" value="<?php echo htmlspecialchars($row['title']); ?>">
+                                    <textarea id="edit-content-<?php echo $row['post_id']; ?>" rows="4"><?php echo htmlspecialchars($row['content']); ?></textarea>
+                                    <button class="save-edit-btn" data-post-id="<?php echo $row['post_id']; ?>">Save</button>
+                                </div>
                             <?php endif; ?>
                         </article>
                     <?php endwhile; ?>
