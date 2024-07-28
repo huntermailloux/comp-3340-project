@@ -1,5 +1,5 @@
 function fetchResults(query) {
-    fetch(`search.php?query=${encodeURIComponent(query)}`)
+    fetch(`../private/search.php?query=${encodeURIComponent(query)}`)
         .then(response => {
             console.log('Response status:', response.status);
             if (!response.ok) {
@@ -51,9 +51,9 @@ function handleDelete(event) {
     let url = '';
 
     if (type === 'user') {
-        url = `admin_delete_user.php?id=${id}`;
+        url = `../private/admin_delete_user.php?id=${id}`;
     } else if (type === 'post') {
-        url = `admin_delete_post.php?id=${id}`;
+        url = `../private/admin_delete_post.php?id=${id}`;
     }
 
     if (confirm('Are you sure you want to delete this record?')) {

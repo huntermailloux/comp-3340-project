@@ -1,4 +1,4 @@
-const ROWS_PER_PAGE = 5;
+const ROWS_PER_PAGE = 25;
 
 let userData = [];
 let userCurrentPage = 1;
