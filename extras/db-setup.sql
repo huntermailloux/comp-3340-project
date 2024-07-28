@@ -47,3 +47,7 @@ CREATE TABLE Likes (
     FOREIGN KEY (userId) REFERENCES Users(id) ON DELETE CASCADE,
     UNIQUE KEY (postId, userId) 
 );
+
+-- Insert an admin user
+INSERT INTO Users (username, password, first_name, last_name, is_admin)
+VALUES ('admin', 'admin', 'Admin', 'User', TRUE);
