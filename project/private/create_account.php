@@ -24,7 +24,7 @@ if (isset($_POST['FirstName']) && isset($_POST['LastName']) && isset($_POST['use
 
     if ($password === $confirm_password) {
         if (usernameExists($username, $conn)) {
-            header("Location: register.php?error=username_already_exists");
+            header("Location: /project/public_html/register.php?error=username_already_exists");
             exit();
         }
         else {        
@@ -33,17 +33,17 @@ if (isset($_POST['FirstName']) && isset($_POST['LastName']) && isset($_POST['use
             $stmt->bind_param("ssss", $FirstName, $LastName, $username, $password);
     
             if ($stmt->execute()) {
-                header("Location: login.php?success=account_created");
+                header("Location: /project/public_html/login.php?success=account_created");
             } else {
-                header("Location: register.php?error=account_not_created");
+                header("Location: /project/public_html/register.php?error=account_not_created");
             }
     
             $stmt->close();
         }
     } else {
-        header("Location: register.php?error=password_mismatch");
+        header("Location: /project/public_html/register.php?error=password_mismatch");
     }
 } else {
-    header("Location: register.php?error=missing_data");
+    header("Location: /project/public_html/register.php?error=missing_data");
 }
 ?>

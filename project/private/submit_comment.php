@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($stmt->execute()) {
             // Redirect back to the post page
-            header("Location: post-info.php?post_id=" . $post_id);
+            header("Location: /project/public_html/post-info.php?post_id=" . $post_id);
             exit;
         } else {
             echo "Error: " . $stmt->error;
@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $stmt->close();
     } else {
-        header('Location: login.php');
+        header('Location: /project/public_html/login.php');
         exit;
     }
 }

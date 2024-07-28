@@ -1,15 +1,16 @@
 <?php
 session_start();
-require 'connectionString.php';
+require '../private/connectionString.php';
 
-// Check if the user is logged in
-if (!isset($_SESSION['loggedin']) || !$_SESSION['loggedin']) {
-    echo "<p>Please <a href='login.php'>login</a> to see your posts.</p>";
-    exit;
+$userId = $_SESSION['userId'] ?? 0; // Default to 0 if userId is not set
+$isAdmin = $_SESSION['isAdmin'] ?? 0;
+
+// Debugging line to check user ID
+if ($userId == 0) {
+    echo "Warning: User not logged in or session not initialized.";
 }
 
-$userId = $_SESSION['userId'] ?? 0; // Get the logged-in user's ID
-
+// Fetch recent posts
 $query = "
     SELECT p.id AS post_id, p.title, p.content, u.username, p.timestamp,
            (SELECT COUNT(*) FROM Likes l WHERE l.postId = p.id) AS like_count,
@@ -17,16 +18,26 @@ $query = "
            (SELECT COUNT(*) FROM Comments c WHERE c.postId = p.id) AS comment_count
     FROM Posts p
     JOIN Users u ON p.userId = u.id
-    WHERE p.userId = ?
     ORDER BY p.timestamp DESC";
 
 if ($stmt = $conn->prepare($query)) {
-    $stmt->bind_param("ii", $userId, $userId);
+    $stmt->bind_param("i", $userId);
     $stmt->execute();
     $result = $stmt->get_result();
 } else {
     echo "Prepare failed: (" . $conn->errno . ") " . $conn->error;
 }
+
+// Fetch top 5 most liked posts
+$popularQuery = "
+    SELECT p.id AS post_id, p.title, p.content, u.username, p.timestamp,
+           (SELECT COUNT(*) FROM Likes l WHERE l.postId = p.id) AS like_count
+    FROM Posts p
+    JOIN Users u ON p.userId = u.id
+    ORDER BY like_count DESC
+    LIMIT 5";
+
+$popularPosts = $conn->query($popularQuery);
 ?>
 
 <!DOCTYPE html>
@@ -34,7 +45,7 @@ if ($stmt = $conn->prepare($query)) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Posts - COMP3340 Project</title>
+    <title>COMP3340 Project</title>
     <link rel="stylesheet" href="style_homepage.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
@@ -43,7 +54,7 @@ if ($stmt = $conn->prepare($query)) {
                 var postId = $(this).data('post-id');
                 var action = $(this).hasClass('liked') ? 'unlike' : 'like';
 
-                $.post('like_post.php', { post_id: postId, action: action }, function(response) {
+                $.post('../private/like_post.php', { post_id: postId, action: action }, function(response) {
                     if (response.success) {
                         var likeCount = $('#like-count-' + postId);
                         likeCount.text(response.like_count);
@@ -54,40 +65,6 @@ if ($stmt = $conn->prepare($query)) {
                         } else {
                             likeButton.removeClass('liked').text('Like');
                         }
-                    } else {
-                        alert(response.message);
-                    }
-                }, 'json');
-            });
-
-            $('.delete-btn').click(function() {
-                var postId = $(this).data('post-id');
-                if (confirm('Are you sure you want to delete this post?')) {
-                    $.post('delete_post.php', { post_id: postId }, function(response) {
-                        if (response.success) {
-                            $('#post-' + postId).remove();
-                        } else {
-                            alert(response.message);
-                        }
-                    }, 'json');
-                }
-            });
-
-            $('.edit-btn').click(function() {
-                var postId = $(this).data('post-id');
-                $('#edit-form-' + postId).toggle(); // Toggle visibility of the edit form
-            });
-
-            $('.save-edit-btn').click(function() {
-                var postId = $(this).data('post-id');
-                var title = $('#edit-title-' + postId).val();
-                var content = $('#edit-content-' + postId).val();
-
-                $.post('edit_post.php', { post_id: postId, title: title, content: content }, function(response) {
-                    if (response.success) {
-                        $('#post-title-' + postId).text(title); // Update the title in the DOM
-                        $('#post-content-' + postId).text(content); // Update the content in the DOM
-                        $('#edit-form-' + postId).hide(); // Hide the edit form after saving
                     } else {
                         alert(response.message);
                     }
@@ -113,9 +90,9 @@ if ($stmt = $conn->prepare($query)) {
                     <img src="profile-icon.png" alt="Profile" class="profile-img">
                     <div class="profile-dropdown">
                         <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin']): ?>
-                            <a href="logout.php">Logout</a>
-                            <?php if ($_SESSION['isAdmin']): ?>
-                                <a href="admin.php">Admin Panel</a>
+                            <a href="../private/logout.php">Logout</a>
+                            <?php if ($isAdmin == 1): ?>
+                                <a href="admin.php">Admin</a>
                             <?php endif; ?>
                         <?php else: ?>
                             <a href="login.php">Login</a>
@@ -130,29 +107,40 @@ if ($stmt = $conn->prepare($query)) {
         <div class="container">
             <div class="main-content">
                 <section class="posts">
-                    <h2>My Posts</h2>
                     <?php while ($row = $result->fetch_assoc()): ?>
-                        <article class="post" id="post-<?php echo $row['post_id']; ?>">
+                        <article class="post">
                             <h2><a href="post-info.php?post_id=<?php echo $row['post_id']; ?>"><?php echo htmlspecialchars($row['title']); ?></a></h2>
                             <p class="author">Posted by <?php echo htmlspecialchars($row['username']); ?> on <?php echo htmlspecialchars($row['timestamp']); ?></p>
-                            <p class="content" id="post-content-<?php echo $row['post_id']; ?>"><?php echo nl2br(htmlspecialchars($row['content'])); ?></p>
+                            <p class="content"><?php echo nl2br(htmlspecialchars($row['content'])); ?></p>
                             <p class="comments">Comments: <?php echo $row['comment_count']; ?></p>
-                            <p class="likes">Likes: <span id="like-count-<?php echo $row['post_id']; ?>"><?php echo $row['like_count']; ?></span></p>
+                            <p class="likes">Likes:&nbsp; <span id="like-count-<?php echo $row['post_id']; ?>"><?php echo $row['like_count']; ?></span></p>
                             <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin']): ?>
                                 <button id="like-btn-<?php echo $row['post_id']; ?>" class="like-btn <?php echo ($row['user_liked'] > 0) ? 'liked' : ''; ?>" data-post-id="<?php echo $row['post_id']; ?>">
                                     <?php echo ($row['user_liked'] > 0) ? 'Unlike' : 'Like'; ?>
                                 </button>
-                                <button class="delete-btn" data-post-id="<?php echo $row['post_id']; ?>">Delete</button>
-                                <button class="edit-btn" data-post-id="<?php echo $row['post_id']; ?>">Edit</button>
-                                <div class="edit-form" id="edit-form-<?php echo $row['post_id']; ?>" style="display: none;">
-                                    <input type="text" id="edit-title-<?php echo $row['post_id']; ?>" value="<?php echo htmlspecialchars($row['title']); ?>">
-                                    <textarea id="edit-content-<?php echo $row['post_id']; ?>" rows="4"><?php echo htmlspecialchars($row['content']); ?></textarea>
-                                    <button class="save-edit-btn" data-post-id="<?php echo $row['post_id']; ?>">Save</button>
-                                </div>
                             <?php endif; ?>
                         </article>
                     <?php endwhile; ?>
                 </section>
+                
+                <aside class="sidebar">
+                    <section class="sidebar-item">
+                        <h3>Popular Posts</h3>
+                        <ul>
+                            <?php
+                            $rank = 1;
+                            while ($popular = $popularPosts->fetch_assoc()): ?>
+                                <li><a href="post-info.php?post_id=<?php echo $popular['post_id']; ?>"><?php echo "#" . $rank . ": " . htmlspecialchars($popular['title']); ?></a></li>
+                                <?php $rank++; ?>
+                            <?php endwhile; ?>
+                        </ul>
+                    </section>
+                    <section class="sidebar-item">
+                        <a href="createPost.php">
+                            <button class="create-button">Create Post</button>
+                        </a>
+                    </section>
+                </aside>
             </div>
         </div>
     </main>
@@ -164,20 +152,20 @@ if ($stmt = $conn->prepare($query)) {
     </footer>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {
-            const profileImg = document.querySelector('.profile-img');
-            const profileDropdown = document.querySelector('.profile-dropdown');
+        const profileImg = document.querySelector('.profile-img');
+        const profileDropdown = document.querySelector('.profile-dropdown');
 
-            profileImg.addEventListener('click', () => {
-                profileDropdown.style.display = profileDropdown.style.display === 'none' || profileDropdown.style.display === '' ? 'block' : 'none';
-            });
-
-            // Close the dropdown if the user clicks outside of it
-            document.addEventListener('click', (event) => {
-                if (!profileImg.contains(event.target) && !profileDropdown.contains(event.target)) {
-                    profileDropdown.style.display = 'none';
-                }
-            });
+        profileImg.addEventListener('click', () => {
+            profileDropdown.style.display = profileDropdown.style.display === 'none' || profileDropdown.style.display === '' ? 'block' : 'none';
         });
+
+        // Close the dropdown if the user clicks outside of it
+        document.addEventListener('click', (event) => {
+            if (!profileImg.contains(event.target) && !profileDropdown.contains(event.target)) {
+                profileDropdown.style.display = 'none';
+            }
+        });
+    });
     </script>
 </body>
 </html>

@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($stmt->execute()) {
         echo "Post created successfully!";
         // Redirect to a different page if needed
-        header('Location: createPost.php');
+        header('Location: /project/public_html/createPost.php');
         exit;
     } else {
         echo "Error: " . $stmt->error;

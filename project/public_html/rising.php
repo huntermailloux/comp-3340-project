@@ -1,5 +1,24 @@
-<?php 
-    require 'connectionString.php';
+<?php
+require '../private/connectionString.php';
+
+$isAdmin = $_SESSION['isAdmin'] ?? 0;
+// Fetch posts from the last 24 hours sorted by most likes to least likes
+$sql = "SELECT Posts.id, Posts.title, Posts.content, Users.username, COUNT(Likes.id) as like_count
+        FROM Posts
+        JOIN Users ON Posts.userId = Users.id
+        LEFT JOIN Likes ON Posts.id = Likes.postId
+        WHERE Posts.timestamp >= NOW() - INTERVAL 1 DAY
+        GROUP BY Posts.id
+        ORDER BY like_count DESC, Posts.timestamp DESC";
+
+$result = $conn->query($sql);
+
+$posts = [];
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $posts[] = $row;
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -7,12 +26,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SEHA2024</title>
-    <link rel="stylesheet" href="login.css">
+    <title>Rising Posts</title>
+    <link rel="stylesheet" href="rising.css">
 </head>
 <body>
     <header>
-        <div class="header-container">
+        <div class="container">
             <div class="logo">
                 <img src="logo.png" alt="Logo" class="logo-img">
                 <h1>COMP3340 Project</h1>
@@ -27,7 +46,7 @@
                     <img src="profile-icon.png" alt="Profile" class="profile-img">
                     <div class="profile-dropdown">
                         <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin']): ?>
-                            <a href="logout.php">Logout</a>
+                            <a href="../private/logout.php">Logout</a>
                             <?php if ($isAdmin == 1): ?>
                                 <a href="admin.php">Admin</a>
                             <?php endif; ?>
@@ -39,33 +58,20 @@
             </nav>
         </div>
     </header>
-    <div class="container">
-        <div class="login-container">
-            <form class="login-form" action="login_process.php" method="post">
-                <h2>Login</h2>
-                <?php if (isset($_GET['error'])): ?>
-                    <div class="error">Invalid username or password.</div>
-                <?php endif; ?>
-                <?php if (isset($_GET['success']) && $_GET['success'] == 'account_created'): ?>
-                    <div class="success">Account created successfully!</div>
-                <?php endif; ?>
-                <div class="form-group">
-                    <label for="username">Username</label>
-                    <input type="text" name="username" id="username" required>
-                </div>
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" name="password" id="password" required>
-                </div>
-                <button type="submit" class="submit-btn">Login</button>
-            </form>
-            <a href="register.php">
-                <div class="register">
-                        <button class="register-btn">New? Click here to sign up!</button>
-                </div>
-            </a>
+
+    <main>
+        <h1 class="rising-title">Rising Posts</h1>
+        <div class="posts">
+            <?php foreach ($posts as $post): ?>
+                <article class="post">
+                    <h2><?php echo htmlspecialchars($post['title']); ?></h2>
+                    <p class="author">Posted by <?php echo htmlspecialchars($post['username']); ?></p>
+                    <p class="content"><?php echo nl2br(htmlspecialchars($post['content'])); ?></p>
+                    <p class="likes"><?php echo $post['like_count']; ?> likes</p>
+                </article>
+            <?php endforeach; ?>
         </div>
-    </div>
+    </main>
 
     <footer>
         <div class="container">
@@ -73,7 +79,7 @@
         </div>
     </footer>
     <script>
-        document.addEventListener('DOMContentLoaded', (event) => {
+    document.addEventListener('DOMContentLoaded', (event) => {
         const profileImg = document.querySelector('.profile-img');
         const profileDropdown = document.querySelector('.profile-dropdown');
 
@@ -91,3 +97,8 @@
     </script>
 </body>
 </html>
+
+
+
+
+    

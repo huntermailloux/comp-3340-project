@@ -1,6 +1,6 @@
 <?php
 session_start();
-require 'connectionString.php';
+require '../private/connectionString.php';
 
 // Check if post_id is set in the URL
 if (isset($_GET['post_id'])) {
@@ -40,7 +40,7 @@ if (isset($_GET['post_id'])) {
             $('.delete-comment-btn').click(function() {
                 var commentId = $(this).data('comment-id');
                 if (confirm('Are you sure you want to delete this comment?')) {
-                    $.post('delete_comment.php', { comment_id: commentId }, function(response) {
+                    $.post('../private/delete_comment.php', { comment_id: commentId }, function(response) {
                         if (response.success) {
                             $('#comment-' + commentId).remove();
                         } else {
@@ -59,7 +59,7 @@ if (isset($_GET['post_id'])) {
                 var commentId = $(this).data('comment-id');
                 var content = $('#edit-comment-content-' + commentId).val();
 
-                $.post('edit_comment.php', { comment_id: commentId, content: content }, function(response) {
+                $.post('../private/edit_comment.php', { comment_id: commentId, content: content }, function(response) {
                     if (response.success) {
                         $('#comment-content-' + commentId).text(content); // Update the content in the DOM
                         $('#edit-form-' + commentId).hide(); // Hide the edit form after saving
@@ -88,7 +88,7 @@ if (isset($_GET['post_id'])) {
                     <img src="profile-icon.png" alt="Profile" class="profile-img">
                     <div class="profile-dropdown">
                         <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin']): ?>
-                            <a href="logout.php">Logout</a>
+                            <a href="../private/logout.php">Logout</a>
                             <?php if (isset($_SESSION['isAdmin']) && $_SESSION['isAdmin'] == 1): ?>
                                 <a href="admin.php">Admin</a>
                             <?php endif; ?>
@@ -117,7 +117,7 @@ if (isset($_GET['post_id'])) {
                 <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin']): ?>
                     <div class="comment-form">
                         <h3>Leave a Comment</h3>
-                        <form action="submit_comment.php" method="post">
+                        <form action="../private/submit_comment.php" method="post">
                             <input type="hidden" name="post_id" value="<?php echo $post_id; ?>">
                             <div class="form-group">
                                 <textarea name="comment_content" rows="5" required placeholder="Write your comment here..."></textarea>

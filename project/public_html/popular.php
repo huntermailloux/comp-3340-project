@@ -2,7 +2,7 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 // Connect to database
-require 'connectionString.php'; 
+require '../private/connectionString.php';
 
 $isAdmin = $_SESSION['isAdmin'] ?? 0;
 
@@ -48,7 +48,7 @@ if ($result === FALSE) {
                     <img src="profile-icon.png" alt="Profile" class="profile-img">
                     <div class="profile-dropdown">
                         <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin']): ?>
-                            <a href="logout.php">Logout</a>
+                            <a href="../private/logout.php">Logout</a>
                             <?php if ($isAdmin == 1): ?>
                                 <a href="admin.php">Admin</a>
                             <?php endif; ?>

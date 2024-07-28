@@ -20,11 +20,11 @@ if ($result->num_rows > 0) {
     $_SESSION['userId'] = $row['id'];
     $_SESSION['isAdmin'] = $row['is_admin'];
     $username = $_SESSION['username'];
-    header("Location: homepage.php");
+    header("Location: /project/public_html/homepage.php");
     exit;
     
 } else {
-    header('Location: login.php?error=1');
+    header('Location: /project/public_html/login.php?error=1');
     exit;
 }
 ?>

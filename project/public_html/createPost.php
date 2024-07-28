@@ -1,6 +1,6 @@
 <?php
 session_start();
-require 'connectionString.php';
+require '../private/connectionString.php';
 
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     header('Location: login.php');
@@ -33,7 +33,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
                     <img src="profile-icon.png" alt="Profile" class="profile-img">
                     <div class="profile-dropdown">
                         <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin']): ?>
-                            <a href="logout.php">Logout</a>
+                            <a href="../private/logout.php">Logout</a>
                             <?php if ($isAdmin == 1): ?>
                                 <a href="admin.php">Admin</a>
                             <?php endif; ?>
@@ -48,7 +48,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     <div class="container">
         <div class="post-form-container">
             <h2>Create a New Post</h2>
-            <form action="create_new_post.php" method="post">
+            <form action="../private/create_new_post.php" method="post">
                 <div class="form-group">
                     <label for="title">Title</label>
                     <input type="text" name="title" id="title" required>

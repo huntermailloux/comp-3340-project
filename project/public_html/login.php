@@ -1,5 +1,5 @@
 <?php 
-    require 'connectionString.php';
+    require '../private/connectionString.php';
 ?>
 
 <!DOCTYPE html>
@@ -8,7 +8,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SEHA2024</title>
-    <link rel="stylesheet" href="register.css">
+    <link rel="stylesheet" href="login.css">
 </head>
 <body>
     <header>
@@ -27,7 +27,7 @@
                     <img src="profile-icon.png" alt="Profile" class="profile-img">
                     <div class="profile-dropdown">
                         <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin']): ?>
-                            <a href="logout.php">Logout</a>
+                            <a href="../private/logout.php">Logout</a>
                             <?php if ($isAdmin == 1): ?>
                                 <a href="admin.php">Admin</a>
                             <?php endif; ?>
@@ -39,41 +39,34 @@
             </nav>
         </div>
     </header>
-    <div class="create-account-container" id="create-account-form">
-        <form class="create-account-form" action="create_account.php" method="post">
-            <h2>Create Account</h2>
-            <?php if (isset($_GET['error']) && $_GET['error'] == 'username_already_exists'): ?>
-                <div class="error">The username already exists. Please choose a different username.</div>
-            <?php endif; ?>
-            <?php if (isset($_GET['error']) && $_GET['error'] == 'password_mismatch'): ?>
-                <div class="error">There was a password mismatch. Please try again.</div>
-            <?php endif; ?>
-            <?php if (isset($_GET['error']) && $_GET['error'] == 'missing_data'): ?>
-                <div class="error">There was some missing data. Please make sure to fill out all sections.</div>
-            <?php endif; ?>
-            <div class="form-group">
-                <label for="FirstName">First Name</label>
-                <input type="text" name="FirstName" id="FirstName" required>
-            </div>
-            <div class="form-group">
-                <label for="LastName">Last Name</label>
-                <input type="text" name="LastName" id="LastName" required>
-            </div>
-            <div class="form-group">
-                <label for="username">Username</label>
-                <input type="text" name="username" id="username" required>
-            </div>
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" name="password" id="password" required>
-            </div>
-            <div class="form-group">
-                <label for="confirm_password">Confirm Password</label>
-                <input type="password" name="confirm_password" id="confirm_password"required>
-            </div>
-            <button type="submit" class="submit-btn">Create Account</button>
-        </form>
+    <div class="container">
+        <div class="login-container">
+            <form class="login-form" action="../private/login_process.php" method="post">
+                <h2>Login</h2>
+                <?php if (isset($_GET['error'])): ?>
+                    <div class="error">Invalid username or password.</div>
+                <?php endif; ?>
+                <?php if (isset($_GET['success']) && $_GET['success'] == 'account_created'): ?>
+                    <div class="success">Account created successfully!</div>
+                <?php endif; ?>
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" name="username" id="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" name="password" id="password" required>
+                </div>
+                <button type="submit" class="submit-btn">Login</button>
+            </form>
+            <a href="register.php">
+                <div class="register">
+                        <button class="register-btn">New? Click here to sign up!</button>
+                </div>
+            </a>
+        </div>
     </div>
+
     <footer>
         <div class="container">
             <p>&copy; 2024 COMP3340 Project. All rights reserved.</p>
